@@ -1,7 +1,10 @@
+
 import { getPokemon } from "@/lib/pokemonAPI";
 import { PokemonImage } from "@/components/pokemon-image";
 import { Progress } from "@/components/ui/progress";
+
 import Image from "next/image";
+import React from 'react'
 
 import Finder from '@/components/Finder'
 import { Footer } from "@/components/sections"
@@ -15,20 +18,19 @@ export default async function PokemonPage({params}: { params: { pokemonName: str
   const pokemonObject = await getPokemon(pokemonName);
 
   return (
-    <>
     <main className="relative">
       <Finder />
-    <section className="w-full flex xl:flex-row flex-col justify-center min-h-screen gap-10 max-container">
-      <div className="relative xl:w-2/5 flex flex-col justify-center items-center w-full max-xl:padding-x pt-28 padding-x mb-6">
-        <h1 className="text-white text-shadow-sm font-semibold text-[36px] font-montserrat shadow-2xl">
+    <section className="w-full flex flex-1 xl:flex-row flex-col justify-center min-h-screen gap-14 my-18 max-container">
+      <div className="max-container relative flex flex-col justify-center items-center w-full max-xl:padding-x pt-10 mb-6 max-container">
+        <h1 className="text-white text-shadow-sm font-semibold text-[36px] font-montserrat shadow-2xl max-md:text-[24px] max-sm:hidden my-10">
           {pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1)}
         </h1>
         <div
-          className="m-4 text-center"
+          className=" text-center pr-3 pl-3"
           style={{
             position: "relative",
-            width: "250px",
-            height: "250px",
+            width: "300px",
+            height: "300px",
           }}
         >
           <PokemonImage
@@ -36,31 +38,35 @@ export default async function PokemonPage({params}: { params: { pokemonName: str
             name={pokemonName}
           />
         </div>
-        <div className="text-center font-semibold font-palanquin">
-          <br></br>
-          <h3>Weight: {pokemonObject.weight}</h3>
-          <br></br>
         </div>
-        <div className="flex-col grid place-content-center transition-colors dark:border-gray-500 hover:border-gray-300 hover:bg-red-800 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 border-transparent rounded-lg font-palanquin">
-          {pokemonObject.stats.map((statObject: any) => {
+        </section>
+        <div className="flex-wrap justify-center items-start text-center w-full mb-6 font-palanquin">
+          <h3 className="text-white font-bold px-4 rounded-full" > Type: </h3>
+          <div className=" card-types ">
+          {pokemonObject?.types?.map((type: { type: { name: any; }; }) => {
+            return <span key={type.type.name} className={type.type.name}>{type.type.name}</span>
+          }
+          )}
+          </div>
+          <br></br> 
+          <div className="flex justify-center gap-2">
+          <h3 className="font-bold text-[20px] text-white" >Ability: </h3>{pokemonObject?.abilities?.map((ability: { ability: { name: any; }; }) => {
+              return <p key={ability.ability.name} className="text-[18px] font-semibold"> {ability.ability.name},</p>})}
+          </div></div>
+          <>
+            {pokemonObject.stats.map((statObject: any) => {
             const statName = statObject.stat.name;
             const statValue = statObject.base_stat;
             return (
-              <div className="flex items-stretch font-semibold sm:flex-col max-sm:text-center" style={{ width: "500px"}} key={statName}>
-                <h3 className="p-3 w-2/4">
-                  {statName}: {statValue}
-                </h3>
-                <Progress value={statValue} className="w-2/4 m-auto z-10"/>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-    <section className="bg-black padding-x pb-4">
+              <><div className="flex-1 mb-2 ml-28 mr-28 mt-4 max-container justify-center text-center items-center">
+                <span className="text-base font-medium text-white dark:text-white items-start">{statName}:</span>
+                <span className="text-sm font-medium white dark:text-white items-end text-end"> {statValue}</span></div></>
+             );
+             })}
+          </>
+
+    <section className="bg-black w-full pb-4 mt-16">
       <Footer />
     </section>
-          </main>
-    </>
-  );
-}
+    </main>
+  )};

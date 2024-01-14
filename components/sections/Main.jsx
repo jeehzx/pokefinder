@@ -2,30 +2,21 @@ import background from "@/public/background.png"
 
 const Main = () => {
   return (
-    <section
-      id="home"
-      className="w-full flex xl:flex-row flex-col justify-center min-h-screen gap-10 max-container bg-red-500">
-      <div className="relative xl:w-2/5 flex flex-col justify-center items-start w-full max-xl:padding-x pt-28 padding-x">
-        <a href="/page">
-          <h1 className="mt-10 font-palanquin text-8xl sm:text-[60px] sm:leading-[1] max-sm:text-[20px] font-bold">
-            <span className="text-white mt-3 inline-block">Search</span>
-            <span className="relative z-10 pr-10 xl:whitespace-nowrap">
-              {" "}
-              For Your Pokémon!
-            </span>
-            <p className="font-montserrat text-white text-xl leading-6 mt-8 mb-20 sm:max-w-sm xl:max-w-sm">
-              Pokédex apenas da 1º geração de Pokémon!
+    <section id="home" className="max-container flex min-h-[450px] justify-between text-center md:mx-20 md:pt-32 pt-28  bg-red-500">
+      <div className="flex flex-col md:ml-20 mx-10 mt-10">
+          <h1 className="font-montserrat font-bold text-4xl text-left mb-5 text-yellow-400">Bem-vindo,</h1>
+            <p className="font-montserrat text-white text-left text-[11.5px] mb-5 flex-wrap">
+            A Pokédex é uma ferramenta icônica no universo Pokémon,<br/> desempenhando um papel crucial na jornada de treinadores. <br/>Na primeira geração, esta enciclopédia eletrônica é o companheiro <br/>constante de treinadores em sua busca para <span className="text-yellow-400">"pegar todos".</span> <br/>Desenvolvida pelo Professor Carvalho, a Pokédex tem como principal propósito catalogar e fornecer informações sobre as<br/> criaturas que habitam o mundo <span className="text-yellow-400">Pokémon.</span>
             </p>
-          </h1>
-        </a>
+      <a href="/page" className="font-semibold text-white md:mt-10 mt-4 pt-5 bg-yellow-400 rounded-[30px] w-62 h-16 text-lg hover:bg-black"> Vamos achar seu Pokémon! </a>
       </div>
-
-      <div className="flex bg-cover bg-center">
+      <div className="w-3/4 h-96 shadow-xl rounded-full relative px-10 hidden md:block">
         <img
           src="background.png"
           alt="rottom"
-          fill={true}
-          className="object-contain w-full z-10"
+          layout='fill'
+          objectfit='cover'
+          className="rounded-full cursor-pointer"
         />
       </div>
     </section>

@@ -24,7 +24,7 @@ export function PokemonGrid({ pokemonList }: PokemonGridProps ) {
     <section className="w-full flex xl:flex-row flex-col justify-center min-h-screen gap-10 max-container">
       <div className="relative xl:w-2/5 flex flex-col justify-center items-center w-full max-xl:padding-x pt-28 padding-x" >
         <h3 className="text-lg py-6 text-center font-mono">
-          Search for your Pokemon!
+          Nome:
         </h3>
         <div className="text-center">
           <Label htmlFor="pokemonName"> </Label>

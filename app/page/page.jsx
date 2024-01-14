@@ -16,7 +16,7 @@ export default async function Home() {
         <PokemonGrid pokemonList={pokemonList} />
       </div>
     </section>
-    <section className="bg-black padding-x pb-4">
+    <section >
       <Footer />
     </section>
   </main>

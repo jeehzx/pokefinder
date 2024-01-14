@@ -4,10 +4,10 @@ import Finder from "@/components/Finder"
 const Inicial = () => (
   <main className="relative">
     <Finder />
-    <section className="x1:padding-1 wide:padding-r padding-b">
+    <section className="h-full max-container flex flex-col padding-b mb-56 mt-20 ml-6 mr-6">
       <Main />
     </section>
-    <section className="bg-black padding-x pb-4 h-full">
+    <section className="bg-black w-full mt-16">
       <Footer />
     </section>
   </main>
