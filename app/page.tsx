@@ -1,5 +1,5 @@
-import { Main, Footer } from "@/components/sections"
-import Finder from "@/components/Finder"
+import { Main, Footer } from "@/components/sections";
+import Finder from "@/components/Finder";
 
 const Inicial = () => (
   <main className="relative">
@@ -11,6 +11,6 @@ const Inicial = () => (
       <Footer />
     </section>
   </main>
-)
+);
 
-export default Inicial
+export default Inicial;
