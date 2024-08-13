@@ -16,7 +16,7 @@ module.exports = {
       "2xl": ["24px", "29.26px"],
       "3xl": ["28px", "50px"],
       "4xl": ["48px", "58px"],
-      "8xl": ["96px", "106px"],
+      "5xl": ["96px", "106px"],
     },
     extend: {
       fontFamily: {
@@ -27,9 +27,12 @@ module.exports = {
         "3xl": "0 10px 40px rgba(0, 0, 0, 0.1)",
       },
       screens: {
+        "3xl": "1920px",
+        "4xl": "2560px",
+        "5xl": "3840px",
         wide: "1440px",
       },
     },
   },
   plugins: [],
-}
+};
