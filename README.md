@@ -73,4 +73,5 @@ npm run dev
 
 3. Abra [http://localhost:3000](http://localhost:3000) no navegador
 
-2025 © Jéssica Rodrigues. Todos os direitos reservados.
+
+### 2025 © Jéssica Rodrigues. Todos os direitos reservados.
