@@ -1,9 +1,9 @@
 const Finder = () => {
   return (
-    <header className="items-center container py-8 pl-8 z-10 w-full">
-      <nav className="flex items-center container max-sm:justify-center max-sm:items-center">
-        <a href="/">
-          <img src="Logo.png" alt="logo" width={200} height={120} />
+    <header className="items-center z-10 w-full">
+      <nav className="flex items-center justify-start pb-3 sm:pb-0">
+        <a href="/" className="flex items-center">
+          <img src="/logo.webp" alt="logo" width={200} height={120} className="w-auto h-auto max-w-[180px] sm:max-w-[200px]" />
         </a>
       </nav>
     </header>

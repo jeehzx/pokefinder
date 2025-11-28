@@ -1,34 +1,45 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Palanquin:wght@100;200;300;400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Palanquin:wght@100;200;300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-fire: #ff7402;
-  --color-grass: #9bcc50;
-  --color-steel: #9eb7b8;
-  --color-water: #4592c4;
-  --color-psychic: #f366b9;
-  --color-ground: #ab9842;
-  --color-ice: #51c4e7;
-  --color-flying: #3dc7ef;
-  --color-ghost: #4d5b64;
-  --color-normal: #a4acaf;
-  --color-poison: #7e0058;
-  --color-rock: #a38c21;
-  --color-fighting: #d56723;
-  --color-dark: #707070;
-  --color-bug: #729f3f;
-  --color-dragon: linear-gradient(180deg, #53a4cf 50%, #f16e57 50%);
-  --color-electric: #bba909;
-  --color-fairy: #fdb9e9;
-  --color-shadow: #7b62a3;
-  --color-unknow: #757575;
+/* Custom select arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4L6 8L10 4' stroke='%23666666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
 
-  --color-primary: #006d77;
-  --color-primary-hover: #83c5be;
+:root {
+  /* Cores dos Tipos de Pokémon */
+  --color-bug: #A7B723;
+  --color-dark: #75574C;
+  --color-dragon: #7037FF;
+  --color-electric: #F9CF30;
+  --color-fairy: #E69EAC;
+  --color-fighting: #C12239;
+  --color-fire: #F57D31;
+  --color-flying: #A891EC;
+  --color-ghost: #70559B;
+  --color-normal: #AAA67F;
+  --color-grass: #74CB48;
+  --color-ground: #DEC16B;
+  --color-ice: #9AD6DF;
+  --color-poison: #A43E9E;
+  --color-psychic: #FB5584;
+  --color-rock: #B69E31;
+  --color-steel: #B7B9D0;
+  --color-water: #6493EB;
+
+  /* Identidade do Website */
+  --color-primary: #e84a44;
+  --color-identity-dark: #212121;
+  --color-medium: #666666;
+  --color-light: #E0E0E0;
+  --color-background: #EFEFEF;
+  --color-white: #FFFFFF;
 }
 
 * {
@@ -36,6 +47,20 @@
   margin: 0;
   padding: 0;
   scroll-behavior: smooth;
+  cursor: url("/pokeball-cursor.cur"), auto;
+  caret-color: transparent;
+}
+
+a, button, select, textarea {
+  cursor: url("/pokeball-cursor.cur"), pointer;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea {
+  caret-color: auto;
 }
 @layer base {
   html {
@@ -44,47 +69,154 @@
 }
 
 @layer components {
-  .max-container {
+  /* Container padrão com largura máxima e centralização */
+  .container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Container com padding responsivo */
+  .container-padding {
+    @apply container;
+    @apply px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16;
+  }
+
+  /* Container sem padding lateral (para uso interno) */
+  .container-full {
+    width: 100%;
     max-width: 1440px;
     margin: 0 auto;
   }
 
   .input {
-    @apply sm:flex-1 max-sm:w-full text-base leading-normal text-slate-300 pl-5 max-sm:p-5 outline-none sm:border-none border max-sm:border-slate-700 max-sm:rounded-full;
+    @apply sm:flex-1 max-sm:w-full text-base leading-normal text-identity-dark pl-5 max-sm:p-5 outline-none sm:border-none border max-sm:border-light max-sm:rounded-full;
   }
 }
 
+@keyframes pokemon-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-4px) scale(1.05);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.08);
+  }
+  75% {
+    transform: translateY(-4px) scale(1.05);
+  }
+}
+
+@keyframes pokemon-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.animate-pokemon-bounce {
+  animation: pokemon-bounce 0.6s ease-in-out infinite;
+}
+
+.animate-pokemon-shake {
+  animation: pokemon-shake 0.3s ease-in-out infinite;
+}
+
 @layer utilities {
+  /* Padding completo (x e y) */
   .padding {
-    @apply sm:px-16 px-8 sm:py-24 py-12;
+    @apply px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-12 lg:py-12;
   }
 
+  /* Padding horizontal */
   .padding-x {
-    @apply sm:px-16 px-8;
+    @apply px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16;
   }
 
+  /* Padding vertical */
   .padding-y {
-    @apply sm:py-24 py-12;
+    @apply py-6 sm:py-8 md:py-10 lg:py-12 xl:py-16;
   }
 
+  /* Padding lateral esquerdo */
   .padding-l {
-    @apply sm:pl-16 pl-8;
+    @apply pl-4 sm:pl-6 md:pl-8 lg:pl-12 xl:pl-16;
   }
 
+  /* Padding lateral direito */
   .padding-r {
-    @apply sm:pr-16 pr-8;
+    @apply pr-4 sm:pr-6 md:pr-8 lg:pr-12 xl:pr-16;
   }
 
+  /* Padding superior */
   .padding-t {
-    @apply sm:pt-24 pt-12;
+    @apply pt-6 sm:pt-8 md:pt-10 lg:pt-12 xl:pt-16;
   }
 
+  /* Padding inferior */
   .padding-b {
-    @apply sm:pb-24 pb-12;
+    @apply pb-6 sm:pb-8 md:pb-10 lg:pb-12 xl:pb-16;
+  }
+
+  /* Margens */
+  .margin {
+    @apply mx-4 my-6 sm:mx-6 sm:my-8 md:mx-8 md:my-10 lg:mx-12 lg:my-12;
+  }
+
+  .margin-x {
+    @apply mx-4 sm:mx-6 md:mx-8 lg:mx-12 xl:mx-16;
+  }
+
+  .margin-y {
+    @apply my-6 sm:my-8 md:my-10 lg:my-12 xl:my-16;
+  }
+
+  .margin-l {
+    @apply ml-4 sm:ml-6 md:ml-8 lg:ml-12 xl:ml-16;
+  }
+
+  .margin-r {
+    @apply mr-4 sm:mr-6 md:mr-8 lg:mr-12 xl:mr-16;
+  }
+
+  .margin-t {
+    @apply mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-16;
+  }
+
+  .margin-b {
+    @apply mb-6 sm:mb-8 md:mb-10 lg:mb-12 xl:mb-16;
+  }
+
+  /* Espaçamento entre elementos */
+  .gap {
+    @apply gap-4 sm:gap-6 md:gap-8 lg:gap-10;
+  }
+
+  .gap-sm {
+    @apply gap-2 sm:gap-3 md:gap-4;
+  }
+
+  .gap-lg {
+    @apply gap-6 sm:gap-8 md:gap-10 lg:gap-12;
   }
 
   .info-text {
-    @apply font-montserrat text-slate-700 text-lg leading-7;
+    @apply font-inter text-medium text-lg leading-7;
   }
 }
 .card-types {
