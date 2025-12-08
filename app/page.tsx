@@ -217,7 +217,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-primary relative w-full overflow-hidden">
+    <main className="min-h-screen bg-primary relative w-full overflow-hidden flex flex-col">
       {/* Navbar */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-4 z-30 relative">
         <Finder />
@@ -266,15 +266,15 @@ export default function Home() {
       )}
 
       {/* Estado final: Layout 50/50 */}
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center py-4 sm:py-6">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center py-4 sm:py-6 md:py-8 lg:py-12">
         <div
           ref={layoutRef}
           className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
           style={{ display: isTransitioned ? "grid" : "none" }}
         >
           {/* Texto centralizado no mobile */}
-          <div ref={textRef} className="text-white space-y-4 sm:space-y-6 opacity-0 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold">
+          <div ref={textRef} className="text-white space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6 opacity-0 text-center lg:text-left">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-extrabold leading-tight">
               <span 
                 className="bg-gradient-to-r from-type-electric via-[#FFD700] to-type-electric bg-clip-text text-transparent"
                 style={{
@@ -285,7 +285,7 @@ export default function Home() {
                 Bem-vindo,
               </span>
             </h1>
-            <div className="space-y-3 sm:space-y-4 text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed text-white/95">
+            <div className="space-y-2 sm:space-y-2.5 md:space-y-3 lg:space-y-4 text-xs sm:text-sm md:text-base lg:text-base xl:text-lg leading-relaxed text-white/95">
               <p>
                 A Pokédex é uma ferramenta icônica no universo Pokémon,
                 desempenhando um papel crucial na jornada de treinadores.
@@ -302,7 +302,7 @@ export default function Home() {
             </div>
             <Link
               href="/page"
-              className="inline-block mt-6 sm:mt-8 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-type-electric to-[#FFD700] text-white font-bold text-base sm:text-lg md:text-xl rounded-lg hover:from-[#FFD700] hover:to-type-electric transition-all duration-300 shadow-drop-6dp hover:shadow-drop-2dp hover:scale-105 transform"
+              className="inline-block mt-4 sm:mt-5 md:mt-6 lg:mt-8 px-4 sm:px-5 md:px-6 lg:px-7 xl:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 xl:py-4 bg-gradient-to-r from-type-electric to-[#FFD700] text-white font-bold text-xs sm:text-sm md:text-base lg:text-base xl:text-lg rounded-lg hover:from-[#FFD700] hover:to-type-electric transition-all duration-300 shadow-drop-6dp hover:shadow-drop-2dp hover:scale-105 transform"
               style={{
                 boxShadow: "0px 4px 12px rgba(249, 207, 48, 0.5), 0px 2px 6px rgba(249, 207, 48, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)",
               }}
@@ -327,7 +327,7 @@ export default function Home() {
 
       {/* Footer - aparece apenas após a transição */}
       {isTransitioned && (
-        <footer className="w-full py-3 bg-primary">
+        <footer className="w-full py-3 bg-primary mt-auto">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
             <p className="text-white text-center text-xs">
               2025 © Jéssica Rodrigues. Todos os direitos reservados

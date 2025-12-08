@@ -7,6 +7,7 @@ import Finder from "@/components/Finder";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { translate, translateStatName, translateEggGroup, translateAbilityName } from "@/lib/translations";
+import { translateDescription } from "@/lib/translateDescription";
 
 const POKEMON_API = "https://pokeapi.co/api/v2/";
 
@@ -83,6 +84,7 @@ export default async function PokemonPage({
     
     // Descrição em português (tentar diferentes versões e idiomas)
     let description = "Descrição não disponível.";
+    let needsTranslation = false;
     
     if (species?.flavor_text_entries && species.flavor_text_entries.length > 0) {
       // Priorizar português brasileiro, depois português, depois inglês
@@ -104,8 +106,23 @@ export default async function PokemonPage({
       } else if (ptEntries.length > 0) {
         description = ptEntries[ptEntries.length - 1].flavor_text;
       } else if (enEntries.length > 0) {
-        // Se só tiver em inglês, usar a mais recente
+        // Se só tiver em inglês, marcar para tradução
         description = enEntries[enEntries.length - 1].flavor_text;
+        needsTranslation = true;
+      }
+    }
+    
+    // Traduzir descrição se necessário
+    if (needsTranslation && description !== "Descrição não disponível.") {
+      try {
+        const translated = await translateDescription(description);
+        // Só atualizar se a tradução for diferente do original
+        if (translated && translated !== description) {
+          description = translated;
+        }
+      } catch (error) {
+        // Se a tradução falhar, manter a descrição em inglês
+        console.warn(`Erro ao traduzir descrição para ${pokemonName}:`, error);
       }
     }
     
