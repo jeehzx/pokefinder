@@ -53,17 +53,26 @@ export const translations = {
   "steel": "Aço",
   "water": "Água",
   
-  // Egg Groups
+  // Egg Groups (Gen I)
   "monster": "Monstro",
   "water1": "Água 1",
   "water2": "Água 2",
   "water3": "Água 3",
+  "bug": "Inseto",
+  "flying": "Voador",
   "field": "Campo",
+  "grass": "Grama",
   "human-like": "Humanoide",
+  "humanshape": "Humanoide", // Variante do nome
   "mineral": "Mineral",
   "amorphous": "Amorfo",
+  "dragon": "Dragão",
   "ditto": "Ditto",
   "undiscovered": "Desconhecido",
+  // Remover traduções para grupos que não existem na Gen I
+  // "indeterminate": "", // Não existe na Gen I
+  // "no-eggs": "", // Não existe na Gen I
+  // "plant": "", // Não existe na Gen I (usar "grass")
   
   // Itens de evolução comuns (Gen I)
   "fire-stone": "Pedra do Fogo",
@@ -235,10 +244,72 @@ export function translateStatName(statName: string): string {
   return translate(normalized) || statName;
 }
 
-// Função para traduzir egg group
+// Mapeamento de correções de nomes de egg groups da API para nomes corretos da Gen I
+export const eggGroupNameCorrections: Record<string, string> = {
+  "ground": "field", // API retorna "ground" mas o correto é "field"
+  "humanshape": "human-like", // Variante do nome
+  "plant": "grass", // Variante do nome
+};
+
+// Egg groups válidos da Gen I
+export const gen1EggGroups = [
+  "monster",
+  "water1",
+  "water2",
+  "water3",
+  "bug",
+  "flying",
+  "field",
+  "grass",
+  "human-like",
+  "humanshape", // Variante (será normalizado para "human-like")
+  "mineral",
+  "amorphous",
+  "dragon",
+  "ditto",
+  "undiscovered",
+];
+
+// Função para normalizar nome de egg group (aplicar correções)
+export function normalizeEggGroupName(group: string): string {
+  if (!group) return "";
+  
+  let normalized = group.toLowerCase().replace(/\s+/g, '-');
+  
+  // Aplicar correções conhecidas
+  if (eggGroupNameCorrections[normalized]) {
+    normalized = eggGroupNameCorrections[normalized];
+  }
+  
+  return normalized;
+}
+
+// Função para traduzir egg group (apenas Gen I)
+// Nota: Os grupos já vêm normalizados do pokemonAPI.ts
 export function translateEggGroup(group: string): string {
-  const normalized = group.toLowerCase().replace(/\s+/g, '-');
-  return translate(normalized) || group;
+  if (!group) return "";
+  
+  // Normalizar o nome (aplicar correções)
+  const normalized = normalizeEggGroupName(group);
+  
+  // Se não for um egg group da Gen I, retornar string vazia
+  if (!gen1EggGroups.includes(normalized)) {
+    return "";
+  }
+  
+  // Traduzir
+  const translated = translate(normalized);
+  
+  // Se encontrou tradução, retornar. Caso contrário, formatar o nome original
+  if (translated !== normalized) {
+    return translated;
+  }
+  
+  // Fallback: formatar o nome
+  return normalized
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 // Função para traduzir nome de habilidade

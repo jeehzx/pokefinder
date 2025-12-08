@@ -10,7 +10,7 @@ import Finder from "@/components/Finder";
 import { Search } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { translate, translateEggGroup, translateType } from "@/lib/translations";
+import { translate, translateEggGroup, translateType, gen1EggGroups, normalizeEggGroupName } from "@/lib/translations";
 
 // Registrar ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -113,8 +113,14 @@ export default function Home() {
     new Set(pokemonList.flatMap((p) => p.types || []))
   ).sort();
 
+  // Filtrar apenas egg groups válidos da Gen I
   const uniqueEggGroups = Array.from(
-    new Set(pokemonList.flatMap((p) => p.eggGroups || []))
+    new Set(
+      pokemonList
+        .flatMap((p) => p.eggGroups || [])
+        .map((group) => normalizeEggGroupName(group))
+        .filter((group) => group && gen1EggGroups.includes(group))
+    )
   ).sort();
 
   const uniqueEvolutionStages = Array.from(
@@ -131,10 +137,12 @@ export default function Home() {
     const matchesType =
       !selectedType || (pokemon.types || []).includes(selectedType);
 
-    // Filtro de egg group
+    // Filtro de egg group (normalizar para comparação)
     const matchesEggGroup =
       !selectedEggGroup ||
-      (pokemon.eggGroups || []).includes(selectedEggGroup);
+      (pokemon.eggGroups || [])
+        .map((group) => normalizeEggGroupName(group))
+        .includes(normalizeEggGroupName(selectedEggGroup));
 
     // Filtro de estágio de evolução
     const matchesEvolutionStage =
@@ -215,6 +223,13 @@ export default function Home() {
             {/* Pokedex Label */}
             <PokedexLabel pokemonCount={filteredPokemon.length} />
 
+            {/* Aviso sobre Gen 1 */}
+            <div className="mb-3 sm:mb-4 text-center">
+              <p className="text-xs sm:text-sm text-medium/80 italic">
+                * Esta Pokédex foca exclusivamente na Geração 1, mantendo apenas o conhecimento e padrões disponíveis naquela geração.
+              </p>
+            </div>
+
             {/* Search Bar */}
             <div className="mb-4 sm:mb-6">
               <div className="relative">
@@ -252,11 +267,17 @@ export default function Home() {
                 className="flex-1 min-w-[120px] sm:min-w-[140px]"
               >
                 <option value="">{translate('Egg Group')}</option>
-                {uniqueEggGroups.map((group) => (
-                  <option key={group} value={group}>
-                    {translateEggGroup(group)}
-                  </option>
-                ))}
+                {uniqueEggGroups
+                  .map((group) => ({
+                    value: group,
+                    label: translateEggGroup(group),
+                  }))
+                  .filter((item) => item.label) // Remover grupos sem tradução
+                  .map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
               </Select>
 
               {/* Filtro de Estágio de Evolução */}

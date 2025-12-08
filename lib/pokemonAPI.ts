@@ -1,3 +1,5 @@
+import { gen1EggGroups, normalizeEggGroupName } from "./translations";
+
 const POKEMON_API = "https://pokeapi.co/api/v2/";
 
 export async function getPokemonList() {
@@ -83,8 +85,12 @@ export async function getAllPokemonWithDetails() {
       // Buscar species para egg groups e evolution chain
       const species = await getPokemonSpecies(details.id);
       
-      // Egg groups
-      const eggGroups = species?.egg_groups?.map((group: any) => group.name) || [];
+      // Normalizar e filtrar egg groups da Gen I
+      const rawEggGroups = species?.egg_groups?.map((group: any) => group.name) || [];
+      const eggGroups = rawEggGroups
+        .map((group: string) => normalizeEggGroupName(group))
+        .filter((group: string) => group && gen1EggGroups.includes(group))
+        .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index); // Remover duplicatas
       
       // Evolution stage
       let evolutionStage: number | null = null;

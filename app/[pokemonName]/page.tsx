@@ -6,7 +6,7 @@ import { EvolutionChain } from "@/components/evolution-chain";
 import Finder from "@/components/Finder";
 import Link from "next/link";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { translate, translateStatName, translateEggGroup, translateAbilityName } from "@/lib/translations";
+import { translate, translateStatName, translateEggGroup, translateAbilityName, gen1EggGroups, normalizeEggGroupName } from "@/lib/translations";
 import { translateDescription } from "@/lib/translateDescription";
 
 const POKEMON_API = "https://pokeapi.co/api/v2/";
@@ -86,6 +86,17 @@ export default async function PokemonPage({
     let description = "Descrição não disponível.";
     let needsTranslation = false;
     
+    // Função para limpar texto da descrição
+    const cleanDescription = (text: string): string => {
+      if (!text) return "";
+      return text
+        .replace(/\f/g, ' ') // Substituir form feed por espaço
+        .replace(/\n/g, ' ') // Substituir quebras de linha por espaço
+        .replace(/\r/g, ' ') // Substituir carriage return por espaço
+        .replace(/\s+/g, ' ') // Normalizar múltiplos espaços
+        .trim();
+    };
+    
     if (species?.flavor_text_entries && species.flavor_text_entries.length > 0) {
       // Priorizar português brasileiro, depois português, depois inglês
       // Tentar diferentes versões do jogo para encontrar descrições em português
@@ -102,12 +113,12 @@ export default async function PokemonPage({
       // Usar a primeira disponível na ordem de prioridade
       // Priorizar versões mais recentes (últimas no array geralmente são mais recentes)
       if (ptBrEntries.length > 0) {
-        description = ptBrEntries[ptBrEntries.length - 1].flavor_text;
+        description = cleanDescription(ptBrEntries[ptBrEntries.length - 1].flavor_text);
       } else if (ptEntries.length > 0) {
-        description = ptEntries[ptEntries.length - 1].flavor_text;
+        description = cleanDescription(ptEntries[ptEntries.length - 1].flavor_text);
       } else if (enEntries.length > 0) {
         // Se só tiver em inglês, marcar para tradução
-        description = enEntries[enEntries.length - 1].flavor_text;
+        description = cleanDescription(enEntries[enEntries.length - 1].flavor_text);
         needsTranslation = true;
       }
     }
@@ -117,7 +128,7 @@ export default async function PokemonPage({
       try {
         const translated = await translateDescription(description);
         // Só atualizar se a tradução for diferente do original
-        if (translated && translated !== description) {
+        if (translated && translated !== description && translated.trim().length > 0) {
           description = translated;
         }
       } catch (error) {
@@ -130,26 +141,65 @@ export default async function PokemonPage({
     const height = (pokemonObject.height / 10).toFixed(1);
     const weight = (pokemonObject.weight / 10).toFixed(1);
     
-    // Egg groups
-    const eggGroups = species?.egg_groups?.map((group: any) => group.name) || [];
+    // Egg groups (filtrar apenas Gen I)
+    // Os egg groups da API podem vir com nomes diferentes, então normalizamos
+    const rawEggGroups = species?.egg_groups?.map((group: any) => group.name) || [];
+    const eggGroups = rawEggGroups
+      .map((group: string) => normalizeEggGroupName(group))
+      .filter((group: string) => group && gen1EggGroups.includes(group))
+      .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index); // Remover duplicatas
     
     // Processar cadeia de evolução mantendo estrutura hierárquica
     let evolutionData: any = null;
     if (species?.evolution_chain?.url) {
       const evolutionChain = await getEvolutionChain(species.evolution_chain.url);
       if (evolutionChain?.chain) {
-        const processEvolutionChain = (chain: any): any => {
-          const pokemonId = parseInt(chain.species.url.split('/').slice(-2, -1)[0]);
+        // Função auxiliar para encontrar o Pokémon atual na cadeia
+        const findPokemonInChain = (chain: any, targetId: number): any => {
+          const chainId = parseInt(chain.species.url.split('/').slice(-2, -1)[0]);
+          if (chainId === targetId) {
+            return chain;
+          }
+          if (chain.evolves_to && chain.evolves_to.length > 0) {
+            for (const evolution of chain.evolves_to) {
+              const found = findPokemonInChain(evolution, targetId);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        
+        // Função auxiliar para encontrar o Pokémon anterior na cadeia
+        const findPreviousInChain = (chain: any, targetId: number, previous: any = null): any => {
+          const chainId = parseInt(chain.species.url.split('/').slice(-2, -1)[0]);
+          if (chainId === targetId) {
+            return previous;
+          }
+          if (chain.evolves_to && chain.evolves_to.length > 0) {
+            for (const evolution of chain.evolves_to) {
+              const found = findPreviousInChain(evolution, targetId, chain);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        
+        // Encontrar o Pokémon atual na cadeia
+        const currentInChain = findPokemonInChain(evolutionChain.chain, pokemonId);
+        const previousInChain = findPreviousInChain(evolutionChain.chain, pokemonId);
+        
+        const processEvolutionChain = (chain: any, isBase: boolean = false, evolutionDetails: any = null): any => {
+          const chainId = parseInt(chain.species.url.split('/').slice(-2, -1)[0]);
           
           // Filtrar apenas Gen I
-          if (pokemonId < 1 || pokemonId > 151) {
+          if (chainId < 1 || chainId > 151) {
             return null;
           }
           
-          const basePokemon = {
+          const pokemon = {
             name: chain.species.name,
-            id: pokemonId,
-            details: null,
+            id: chainId,
+            details: isBase ? null : (evolutionDetails || chain.evolution_details?.[0] || null),
             evolvesTo: [] as any[],
           };
           
@@ -183,15 +233,58 @@ export default async function PokemonPage({
                   });
                 }
                 
-                basePokemon.evolvesTo.push(evolvedPokemon);
+                pokemon.evolvesTo.push(evolvedPokemon);
               }
             });
           }
           
-          return basePokemon;
+          return pokemon;
         };
         
-        evolutionData = processEvolutionChain(evolutionChain.chain);
+        // Se encontrou o Pokémon atual na cadeia, construir a partir dele
+        if (currentInChain) {
+          // Encontrar os evolution_details do Pokémon atual (estão no nó que contém o Pokémon atual)
+          let currentEvolutionDetails = null;
+          const findEvolutionDetails = (chain: any, targetId: number): any => {
+            if (chain.evolves_to && chain.evolves_to.length > 0) {
+              for (const evolution of chain.evolves_to) {
+                const evoId = parseInt(evolution.species.url.split('/').slice(-2, -1)[0]);
+                if (evoId === targetId) {
+                  return evolution.evolution_details?.[0] || null;
+                }
+                const found = findEvolutionDetails(evolution, targetId);
+                if (found) return found;
+              }
+            }
+            return null;
+          };
+          currentEvolutionDetails = findEvolutionDetails(evolutionChain.chain, pokemonId);
+          
+          // Processar o Pokémon atual e suas evoluções
+          const currentPokemon = processEvolutionChain(currentInChain, false, currentEvolutionDetails);
+          
+          // Se houver um Pokémon anterior (da Gen I), adicionar como base
+          if (previousInChain) {
+            const prevId = parseInt(previousInChain.species.url.split('/').slice(-2, -1)[0]);
+            if (prevId >= 1 && prevId <= 151) {
+              const basePokemon = processEvolutionChain(previousInChain, true);
+              if (basePokemon) {
+                // Adicionar o Pokémon atual como evolução do anterior
+                basePokemon.evolvesTo = [currentPokemon];
+                evolutionData = basePokemon;
+              } else {
+                evolutionData = currentPokemon;
+              }
+            } else {
+              evolutionData = currentPokemon;
+            }
+          } else {
+            evolutionData = currentPokemon;
+          }
+        } else {
+          // Se não encontrou, processar a cadeia normalmente
+          evolutionData = processEvolutionChain(evolutionChain.chain, true);
+        }
         
         // Buscar sprites para todos os Pokémon na cadeia e itens
         const fetchSprites = async (pokemon: any): Promise<any> => {
@@ -264,7 +357,7 @@ export default async function PokemonPage({
               className="flex items-center gap-1 sm:gap-2 text-white hover:opacity-80 transition-opacity flex-shrink-0 z-10"
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="font-semibold text-xs sm:text-sm md:text-base hidden sm:inline">Voltar para a Pokedex</span>
+              <span className="font-semibold text-xs sm:text-sm md:text-base hidden sm:inline">Voltar</span>
               <span className="font-semibold text-xs sm:hidden">Voltar</span>
             </Link>
             
@@ -340,11 +433,23 @@ export default async function PokemonPage({
               <div className="text-center">
                 <p className="text-medium text-xs sm:text-sm mb-1">{translate('Egg Group')}</p>
                 <div className="flex flex-col gap-0.5">
-                  {eggGroups.map((group: string) => (
-                    <p key={group} className="text-identity-dark font-semibold text-xs sm:text-sm">
-                      {translateEggGroup(group)}
+                  {eggGroups.length > 0 ? (
+                    eggGroups
+                      .map((group: string) => ({
+                        value: group,
+                        label: translateEggGroup(group),
+                      }))
+                      .filter((item: { value: string; label: string }) => item.label) // Remover grupos sem tradução
+                      .map((item: { value: string; label: string }) => (
+                        <p key={item.value} className="text-identity-dark font-semibold text-xs sm:text-sm">
+                          {item.label}
+                        </p>
+                      ))
+                  ) : (
+                    <p className="text-identity-dark font-semibold text-xs sm:text-sm">
+                      Desconhecido
                     </p>
-                  ))}
+                  )}
                 </div>
               </div>
               <div className="text-center">
@@ -363,7 +468,7 @@ export default async function PokemonPage({
             <div className="mb-4 sm:mb-6 pb-4 sm:pb-6 text-center">
               <h3 className="text-identity-dark font-bold text-sm sm:text-base md:text-lg mb-2">{translate('Description')}</h3>
               <p className="text-medium text-xs sm:text-sm md:text-base leading-relaxed max-w-xl mx-auto px-2">
-                {description.replace(/\f/g, ' ').replace(/\n/g, ' ')}
+                {description}
               </p>
             </div>
 
