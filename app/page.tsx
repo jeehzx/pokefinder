@@ -114,6 +114,7 @@ export default function Home() {
       mainTimeline.kill();
       clearInterval(interval);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTransitioned]);
 
   // Desabilitar scroll antes da transição
@@ -208,6 +209,7 @@ export default function Home() {
           setIsTransitioned(true);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHovered, isTransitioned]);
 
   const handleMouseEnter = () => {
@@ -292,7 +294,7 @@ export default function Home() {
               </p>
               <p>
                 Na primeira geração, esta enciclopédia eletrônica é o companheiro
-                constante de treinadores em sua busca para "pegar todos".
+                constante de treinadores em sua busca para &quot;pegar todos&quot;.
               </p>
               <p>
                 Desenvolvida pelo Professor Carvalho, a Pokédex tem como principal

@@ -1,5 +1,3 @@
-import background from "@/public/background.png";
-
 const Main = () => {
   return (
     <section
@@ -17,7 +15,7 @@ const Main = () => {
           Na primeira geração, esta enciclopédia eletrônica é o companheiro
           <br />
           constante de treinadores em sua busca para{" "}
-          <span className="text-yellow-400">"pegar todos".</span> <br />
+          <span className="text-yellow-400">&quot;pegar todos&quot;.</span> <br />
           Desenvolvida pelo Professor Carvalho, a Pokédex tem como principal
           propósito catalogar e fornecer informações sobre as
           <br /> criaturas que habitam o mundo{" "}

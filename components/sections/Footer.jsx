@@ -8,6 +8,7 @@ const Footer = () => {
             <a
               href="https://github.com/jeehzx"
               target="_blank"
+              rel="noreferrer"
               className="cursor-pointer hover:text-white"
             >
               {" "}
